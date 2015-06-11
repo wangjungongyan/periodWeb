@@ -5,6 +5,8 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
+    <display-name>periodWeb</display-name>
+
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -39,8 +41,4 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>spring-mvc</servlet-name>
-        <url-pattern>/index</url-pattern>
-    </servlet-mapping>
 </web-app>
