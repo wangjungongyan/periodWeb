@@ -65,7 +65,8 @@
                                 <label for="key" class="col-sm-2 control-label">KEY:</label>
 
                                 <div class="col-sm-10">
-                                    <input type="text" id="addKey" class="form-control" id="desc" placeholder="" required="required">
+                                    <input type="text" id="addKey" class="form-control" id="desc" placeholder=""
+                                           required="required">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -163,7 +164,8 @@
                         <div class="alert alert-success" role="alert" id="editSucess"></div>
                         <div class="alert alert-danger" role="alert" id="editFail"></div>
                         <button type="button" class="btn btn-primary" id="editButton">更新</button>
-                        <button type="button" class="btn btn-default" id="closeEditButton" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-default" id="closeEditButton" data-dismiss="modal">关闭
+                        </button>
                     </div>
                 </div>
             </div>
@@ -171,10 +173,18 @@
     </div>
 </div>
 <script src="/js/jquery.js"></script>
+<script src="/js/jquery.json.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 
     var currentEnv = "${selectedEnv}";
+
+    function PeriodEntity() {
+        this.key = key;
+        this.value = value;
+        this.desc = desc;
+        this.env = env;
+    }
 
     $(function () {
 
@@ -185,20 +195,23 @@
 
         $('#addButton').on("click", function () {
             var url = "/add";
+
+            var param = {};
+            param.addKey = $("#addKey").val();
+            param.addValue = $("#addValue").val();
+            param.addDesc = $("#addDesc").val();
+            param.envs = getEnvs();
+
             $.ajax(url, {
-                data: {
-                    key : $("#addKey").val(),
-                    value : $("#addValue").val(),
-                    desc : $("#addDesc").val(),
-                    envs : getEnvs()
-                },
+                data: jQuery.toJSON(param),
                 dataType: "json",
-                method:"post",
+                contentType: "application/json",
+                method: "post",
                 success: function (added) {
-                    if(added){
+                    if (added) {
                         $("#addSucess").html("保存成功");
                         $('#addSucess').show().delay(2000).hide(0);
-                    }else{
+                    } else {
                         $("#addFail").html("保存失败");
                         $('#addFail').show().delay(2000).hide(0);
                     }
@@ -208,22 +221,26 @@
 
         $('#editButton').on("click", function () {
             var url = "/update";
+
+            var param = {};
+            param.editKey = $("#editKey").val();
+            param.editValue = $("#editValue").val();
+            param.editDesc = $("#editDesc").val();
+            param.env = currentEnv;
+
             $.ajax(url, {
-                data: {
-                    key : $("#editKey").val(),
-                    value : $("#editValue").val(),
-                    desc : $("#editDesc").val(),
-                    env : currentEnv
-                },
+                data: jQuery.toJSON(param),
                 dataType: "json",
-                method:"post",
+                contentType: "application/json",
+                method: "post",
                 success: function (updated) {
-                    if(updated){
-                       $("#editSucess").html("更新成功");
-                       $('#editSucess').show().delay(2000).hide(0);
-                    }else{
-                       $("#editFail").html("更新失败");
-                       $('#editFail').show().delay(2000).hide(0);
+                    if (updated) {
+                        $("#editSucess").html("更新成功");
+                        $('#editSucess').show().delay(2000).hide(0);
+                        Window.location.reload();
+                    } else {
+                        $("#editFail").html("更新失败");
+                        $('#editFail').show().delay(2000).hide(0);
                     }
                 }
             });

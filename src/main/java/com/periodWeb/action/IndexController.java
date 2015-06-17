@@ -1,5 +1,7 @@
 package com.periodWeb.action;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.period.client.PeriodClientUtil;
 import com.period.common.PeriodEntity;
 import com.period.server.PeriodServerUtil;
@@ -7,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,31 +65,58 @@ public class IndexController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
     public boolean updateProperty(@RequestBody String jsonBody) {
-        String selectedEnv = "";
-        String propertyKey = "";
-        String newValue = "";
-        String desc = "";
-        boolean updated = PeriodServerUtil.updateNode(propertyKey, newValue, desc, selectedEnv);
-        return updated;
+
+        JSONObject ob = parse2JsonObject(jsonBody);
+        String selectedEnv = (String) ob.get("env");
+        String propertyKey = (String) ob.get("editKey");
+        String newValue = (String) ob.get("editValue");
+        String desc = (String) ob.get("editDesc");
+
+        return PeriodServerUtil.updateNode(propertyKey, newValue, desc, selectedEnv);
     }
 
     @RequestMapping(value = "/delete/{env}/{propertyKey}")
     @ResponseBody
     public boolean deleteProperty(@PathVariable String env, @PathVariable String propertyKey) {
-        boolean deleted = PeriodServerUtil.deleteNode(propertyKey, env);
-        return deleted;
+        return PeriodServerUtil.deleteNode(propertyKey, env);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public boolean addProperty
             (@RequestBody String jsonBody) {
-        String env = "";
-        String propertyKey = "";
-        String value = "";
-        String desc = "";
-        boolean add = PeriodServerUtil.createPersistentNode(propertyKey, value, desc, env);
-        return add;
+
+        JSONObject ob = parse2JsonObject(jsonBody);
+        String envs = (String) ob.get("envs");
+        String propertyKey = (String) ob.get("addKey");
+        String value = (String) ob.get("addValue");
+        String desc = (String) ob.get("addDesc");
+
+        String envArr[] = envs.split("\\,");
+
+        boolean result = true;
+
+        for (String env : envArr) {
+            boolean add = PeriodServerUtil.createPersistentNode(propertyKey, value, desc, env);
+            if (!add) {
+                result = false;
+            }
+        }
+
+        return result;
+
+    }
+
+    private JSONObject parse2JsonObject(String jsonBody) {
+
+        JSONObject ob = null;
+        try {
+            ob = JSON.parseObject(URLDecoder.decode(jsonBody, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            ob = null;
+        }
+
+        return ob;
     }
 
 }
