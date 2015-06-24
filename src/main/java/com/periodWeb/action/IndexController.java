@@ -62,7 +62,7 @@ public class IndexController {
         return new ModelAndView("detail", model);
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
     @ResponseBody
     public boolean updateProperty(@RequestBody String jsonBody) {
 
@@ -75,9 +75,14 @@ public class IndexController {
         return PeriodServerUtil.updateNode(propertyKey, newValue, desc, selectedEnv);
     }
 
-    @RequestMapping(value = "/delete/{env}/{propertyKey}")
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     @ResponseBody
-    public boolean deleteProperty(@PathVariable String env, @PathVariable String propertyKey) {
+    public boolean deleteProperty(@RequestBody String jsonBody) {
+
+        JSONObject parma = parse2JsonObject(jsonBody);
+        String env = parma.getString("env");
+        String propertyKey = parma.getString("deleteKey");
+
         return PeriodServerUtil.deleteNode(propertyKey, env);
     }
 
@@ -86,11 +91,11 @@ public class IndexController {
     public boolean addProperty
             (@RequestBody String jsonBody) {
 
-        JSONObject ob = parse2JsonObject(jsonBody);
-        String envs = (String) ob.get("envs");
-        String propertyKey = (String) ob.get("addKey");
-        String value = (String) ob.get("addValue");
-        String desc = (String) ob.get("addDesc");
+        JSONObject param = parse2JsonObject(jsonBody);
+        String envs = param.getString("envs");
+        String propertyKey = param.getString("addKey");
+        String value = param.getString("addValue");
+        String desc = param.getString("addDesc");
 
         String envArr[] = envs.split("\\,");
 
