@@ -19,12 +19,12 @@ import java.util.Map;
 @Controller
 public class PropertyOperateController {
 
-    @RequestMapping(value = "/list/{project}")
+    @RequestMapping(value = "/list/{project}", method = RequestMethod.GET)
     public ModelAndView listProjectEnvs(@PathVariable String project) {
         return listProjectProperties(project, "alpha");
     }
 
-    @RequestMapping(value = "/list/{project}/{selectedEnv}")
+    @RequestMapping(value = "/list/{project}/{selectedEnv}", method = RequestMethod.GET)
     public ModelAndView listProjectProperties(@PathVariable String project, @PathVariable String selectedEnv) {
 
         Map<String, PeriodEntity> properties = null;
